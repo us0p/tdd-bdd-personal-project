@@ -2,7 +2,9 @@ import IProductRepository from "src/domain/interfaces/product.respository.interf
 import ValidationError from "src/errors/validation/validation.error";
 import ProductDTO from "src/services/dto/product/product.dto";
 import ProductEntityMapper from "src/services/helpers/mappers/product/product.mapper";
+import { Injectable } from '@nestjs/common';
 
+@Injectable()
 export default class FindProductByAvailabilityService {
 	private productRepo: IProductRepository
 

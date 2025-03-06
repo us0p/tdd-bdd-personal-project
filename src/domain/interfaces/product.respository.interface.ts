@@ -1,6 +1,7 @@
 import ProductEntity from "src/domain/product/product.entity"
 
 export default interface IProductRepository {
+	findAll: () => Promise<ProductEntity[]>
 	find: (id: number) => Promise<ProductEntity | undefined>
 	findByName: (name: string) => Promise<ProductEntity[]>
 	findByAvailability: (availability: boolean) => Promise<ProductEntity[]>
