@@ -13,6 +13,7 @@ export default class UpdateProductService {
 
 	async exec(id: number, product: ProductDTO): Promise<ProductDTO | undefined> {
 		const entity = ProductEntityMapper.fromDto(product)
+		entity.id = id
 
 		entity.validate()
 

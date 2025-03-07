@@ -26,7 +26,7 @@ import FindAllProducts from './services/product/findAll/findAll.service';
 	],
 })
 export class AppModule {
-	static forRoot(): DynamicModule {
+	static async forRoot(): Promise<DynamicModule> {
 		const providers = [
 		]
 

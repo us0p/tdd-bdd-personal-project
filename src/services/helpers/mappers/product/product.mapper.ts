@@ -8,7 +8,8 @@ export default class ProductEntityMapper {
 			dto.description,
 			dto.price,
 			dto.available,
-			dto.category
+			dto.category,
+			dto.id
 		)
 	}
 

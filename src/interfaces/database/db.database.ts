@@ -25,6 +25,24 @@ export default class DatabaseDAO {
 		return dbDao
 	}
 
+	async all<T>(sql: string, params?: any[]): Promise<T[]> {
+		return new Promise((res, rej) => {
+			this.db.all(sql, params, (err, rows: T[]) => {
+				if (err) rej(err)
+				res(rows)
+			})
+		})
+	}
+
+	async get<T>(sql: string, params: any[]): Promise<T | undefined> {
+		return new Promise((res, rej) => {
+			this.db.get(sql, params, (err, row: T) => {
+				if (err) rej(err)
+				res(row)
+			})
+		})
+	}
+
 	async migrate() {
 		const migrations = await readdir(join(__dirname, "migrations"))
 		for (const migrationPath of migrations) {

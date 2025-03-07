@@ -29,12 +29,13 @@ describe("Testing UpdateProductService", () => {
 		product.id = 2
 		const service = new UpdateProductService(repo)
 		const productDto = ProductEntityMapper.toDto(product)
-		const updatedProduct = await service.exec(1, productDto)
-		expect(updatedProduct).toMatchObject({ ...product, id: 1 })
+		const queryID = 1
+		const updatedProduct = await service.exec(queryID, productDto)
+		expect(updatedProduct).toMatchObject({ ...product, id: queryID })
 		expect(updatedProduct).toBeInstanceOf(ProductDTO)
 		expect(repo.update.mock.calls).toHaveLength(1)
 		expect(repo.update.mock.calls[0][0]).toBe(1)
-		expect(repo.update.mock.calls[0][1]).toMatchObject({ ...product, id: undefined })
+		expect(repo.update.mock.calls[0][1]).toMatchObject({ ...product, id: queryID })
 
 	})
 	it("should make a call to repository update method and return its value", async () => {
@@ -51,11 +52,12 @@ describe("Testing UpdateProductService", () => {
 		const product = new ProductEntityFake()
 		const productDto = ProductEntityMapper.toDto(product)
 		const service = new UpdateProductService(repo)
-		const updatedProduct = await service.exec(1, productDto)
-		expect(updatedProduct).toMatchObject({ ...product, id: 1 })
+		const queryID = 1
+		const updatedProduct = await service.exec(queryID, productDto)
+		expect(updatedProduct).toMatchObject({ ...product, id: queryID })
 		expect(updatedProduct).toBeInstanceOf(ProductDTO)
 		expect(repo.update.mock.calls).toHaveLength(1)
 		expect(repo.update.mock.calls[0][0]).toBe(1)
-		expect(repo.update.mock.calls[0][1]).toMatchObject({ ...product })
+		expect(repo.update.mock.calls[0][1]).toMatchObject({ ...product, id: queryID })
 	})
 })

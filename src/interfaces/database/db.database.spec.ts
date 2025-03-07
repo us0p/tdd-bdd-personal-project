@@ -3,6 +3,10 @@ import Database from "./db.database"
 import { tmpdir } from "node:os"
 import { join } from "node:path"
 
+type ReturningRowsCb<T> = (error: Error | null, rows: T[]) => void | undefined;
+type ReturningRowCb<T> = (error: Error | null, rows: T) => void;
+
+
 jest.mock("node:fs/promises")
 
 describe("Testing Database", () => {
@@ -55,5 +59,40 @@ describe("Testing Database", () => {
 		}
 		expect((db.db.run as jest.Mock).mock.calls).toHaveLength(migrationFileNames.length)
 		expect((db.db.run as jest.Mock).mock.calls[0][0]).toBe(migrationSample)
+	})
+
+	it("should return a call to all method as an async function", async () => {
+		const db = await Database.init(":memory:");
+		(db.db.all as any) = jest.fn((_: string, __: any[], cb: ReturningRowsCb<any>): any => cb(null, []))
+		const sql = "SELECT * FROM table;"
+		const rows = await db.all(sql);
+		expect(rows).toMatchObject([])
+		const dbAllAsMock = db.db.all as jest.Mock
+		expect(dbAllAsMock.mock.calls).toHaveLength(1)
+		expect(dbAllAsMock.mock.calls[0][0]).toBe(sql)
+	})
+
+	it("should allow an array of query params", async () => {
+		const db = await Database.init(":memory:");
+		(db.db.all as any) = jest.fn((_: string, __: any, cb: ReturningRowsCb<any>): any => cb(null, []))
+		const sql = "SELECT * FROM table WHERE name LIKE ? AND price = ?;"
+		const params = ["asdf", 40]
+		await db.all(sql, params)
+		const dbAllAsMock = db.db.all as jest.Mock
+		expect(dbAllAsMock.mock.calls[0][0]).toBe(sql)
+		expect(dbAllAsMock.mock.calls[0][1]).toStrictEqual(params)
+	})
+
+	it("should return a call to get method as an async function", async () => {
+		const db = await Database.init(":memory:");
+		(db.db.get as any) = jest.fn((_: string, __: any, cb: ReturningRowCb<any>): any => cb(null, null))
+		const sql = "SELECT * FROM table WHERE id = ?;"
+		const params = [1]
+		const row = await db.get(sql, params)
+		expect(row).toBeNull()
+		const dbGetAsMock = db.db.get as jest.Mock
+		expect(dbGetAsMock.mock.calls).toHaveLength(1)
+		expect(dbGetAsMock.mock.calls[0][0]).toBe(sql)
+		expect(dbGetAsMock.mock.calls[0][1]).toStrictEqual(params)
 	})
 })

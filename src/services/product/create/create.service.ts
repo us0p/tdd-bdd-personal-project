@@ -12,6 +12,7 @@ export default class CreateProductService {
 	}
 
 	async exec(product: ProductDTO): Promise<ProductDTO> {
+		product.id = undefined
 		const productEntity = ProductEntityMapper.fromDto(product)
 
 		productEntity.validate()
