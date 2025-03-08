@@ -3,7 +3,6 @@ import DatabaseDAO from "../../db.database";
 import ProductEntity from "src/domain/product/product.entity";
 import ProductDTO from "src/services/dto/product/product.dto";
 import ProductEntityMapper from "src/services/helpers/mappers/product/product.mapper";
-import ProductEntityFake from "test/fakes/product.fake";
 
 export default class ProductRepository implements IProductRepository {
 	dao: DatabaseDAO
@@ -28,21 +27,54 @@ export default class ProductRepository implements IProductRepository {
 		return products.map(p => ProductEntityMapper.fromDto(p))
 	}
 	async findByAvailability(availability: boolean): Promise<ProductEntity[]> {
-		return []
+		const products = await this.dao.all<ProductDTO>(
+			"SELECT * FROM product WHERE available = ?;",
+			[availability ? 1 : 0]
+		)
+		return products.map(p => ProductEntityMapper.fromDto(p))
 	}
 	async findByCategory(category: string): Promise<ProductEntity[]> {
-		return []
+		const products = await this.dao.all<ProductDTO>(
+			"SELECT * FROM product WHERE category = ?;",
+			[category]
+		)
+		return products.map(p => ProductEntityMapper.fromDto(p))
 	}
 	async findByPrice(price: number): Promise<ProductEntity[]> {
-		return []
+		const products = await this.dao.all<ProductDTO>(
+			"SELECT * FROM product WHERE price = ?;",
+			[price]
+		)
+		return products.map(p => ProductEntityMapper.fromDto(p))
 	}
 	async create(product: ProductEntity): Promise<ProductEntity> {
-		return new ProductEntityFake()
+		const productDb = await this.dao.get<ProductDTO>(
+			"INSERT INTO product (name, description, price, available, category) VALUES (?, ?, ?, ?, ?) RETURNING *;",
+			[product]
+		)
+		return ProductEntityMapper.fromDto(productDb!)
 	}
 	async update(id: number, product: ProductEntity): Promise<ProductEntity | undefined> {
-		return undefined
+		const productDb = await this.dao.get<ProductDTO>(
+			"UPDATE SET name = ?, description = ?, price = ?, available = ?, category = ? FROM update WHERE id = ? RETURNING *;",
+			[
+				product.name,
+				product.description,
+				product.price,
+				product.available,
+				product.category,
+				id
+			]
+		)
+		if (productDb) return ProductEntityMapper.fromDto(productDb)
+		return productDb
 	}
 	async delete(id: number): Promise<ProductEntity | undefined> {
-		return undefined
+		const product = await this.dao.get<ProductDTO | undefined>(
+			"DELETE FROM product WHERE id = ? RETURNING *;",
+			[id]
+		)
+		if (product) return ProductEntityMapper.fromDto(product)
+		return product
 	}
 }
