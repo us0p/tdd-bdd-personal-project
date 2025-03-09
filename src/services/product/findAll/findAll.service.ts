@@ -13,4 +13,5 @@ export default class FindAllProducts {
 		const products = await this.productRepo.findAll()
 		return products.map(p => ProductEntityMapper.toDto(p))
 	}
+
 }
