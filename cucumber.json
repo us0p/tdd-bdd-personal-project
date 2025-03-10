@@ -1,0 +1,16 @@
+{
+	"default": {
+		"formatOptions": {
+			"snippetInterface": "synchronous"
+		},
+		"paths": [
+			"test/integration/features"
+		],
+		"loader": [
+			"ts-node/esm"
+		],
+		"import": [
+			"test/integration/step_definition/**/*.ts"
+		]
+	}
+}
