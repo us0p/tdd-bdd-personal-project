@@ -4,7 +4,7 @@ import { join } from "node:path"
 
 export default class DatabaseDAO {
 	db: Database
-	static instance: DatabaseDAO
+	static instance?: DatabaseDAO
 
 	private constructor(db: Database) {
 		this.db = db
@@ -46,8 +46,16 @@ export default class DatabaseDAO {
 	async migrate() {
 		const migrations = await readdir(join(__dirname, "migrations"))
 		for (const migrationPath of migrations) {
-			const migration = await readFile(migrationPath, { encoding: "utf8" })
+			const migration = await readFile(
+				join(__dirname, "migrations", migrationPath),
+				{ encoding: "utf8" }
+			)
 			this.db.run(migration)
 		}
+	}
+
+	static getInstance(): DatabaseDAO {
+		if (!DatabaseDAO.instance) throw new Error("not initialized")
+		return DatabaseDAO.instance
 	}
 }

@@ -6,10 +6,11 @@
 		"paths": [
 			"test/integration/features"
 		],
-		"loader": [
-			"ts-node/esm"
+		"requireModule": [
+			"ts-node/register",
+			"tsconfig-paths/register"
 		],
-		"import": [
+		"require": [
 			"test/integration/step_definition/**/*.ts"
 		]
 	}

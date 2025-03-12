@@ -21,27 +21,27 @@ export default class ProductEntity {
 		name: string,
 		description: string,
 		price: string | number,
-		available: boolean,
+		available: boolean | string | number,
 		category: string,
 		id?: number
 	) {
 		this.name = name
 		this.description = description
-		this.available = available
+		this.available = ["true", "1"].includes(available?.toString())
 		this.price = parseFloat(String(price))
-		this.category = Category[category.toUpperCase()]
+		this.category = Category[category?.toUpperCase()]
 		this.id = id
 	}
 
 	validate() {
 		if (typeof this.name !== "string")
-			throw new ValidationError("name must be a string")
+			throw new ValidationError("name is required")
 		if (typeof this.description !== "string")
-			throw new ValidationError("description must be a string")
+			throw new ValidationError("description is required")
 		if (isNaN(this.price) || this.price <= 0)
 			throw new ValidationError("price must be a positive number")
 		if (typeof this.available !== "boolean")
-			throw new ValidationError("available field must be a boolean")
+			throw new ValidationError("available must be a boolean")
 		if (typeof this.category !== "string")
 			throw new ValidationError("category must be a valid Category value")
 	}

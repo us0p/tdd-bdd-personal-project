@@ -5,7 +5,7 @@ import DatabaseDAO from "../database/db.database"
 
 const router = Router()
 
-const db = await DatabaseDAO.init(":memory:")
+const db = DatabaseDAO.getInstance()
 const prepo = new ProductRepository(db)
 const controller = new ProductController(prepo)
 
@@ -33,3 +33,5 @@ router.delete("/:id", async (req, res) => {
 	const apiResponse = await controller.delete(parseInt(req.params.id))
 	res.status(apiResponse.status).json(apiResponse.data).end()
 })
+
+export default router

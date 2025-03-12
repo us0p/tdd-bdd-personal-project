@@ -50,7 +50,13 @@ export default class ProductRepository implements IProductRepository {
 	async create(product: ProductEntity): Promise<ProductEntity> {
 		const productDb = await this.dao.get<ProductDTO>(
 			"INSERT INTO product (name, description, price, available, category) VALUES (?, ?, ?, ?, ?) RETURNING *;",
-			[product]
+			[
+				product.name,
+				product.description,
+				product.price,
+				product.available,
+				product.category
+			]
 		)
 		return ProductEntityMapper.fromDto(productDb!)
 	}

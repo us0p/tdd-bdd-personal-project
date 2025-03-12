@@ -1,6 +1,7 @@
 import ValidationError from "src/errors/validation/validation.error"
 import ProductEntity, { Category } from "./product.entity"
 import ProductEntityFake from "test/fakes/product.fake"
+import ProductDTO from "src/services/dto/product/product.dto"
 
 describe("Testing enum Category", () => {
 	it("should contain only the apropriate enums", () => {
@@ -26,8 +27,10 @@ describe("Testing product entity", () => {
 	}, {
 		payload: new ProductEntityFake(true),
 		message: "should return id as 1"
-	}
-	])("$message", ({ payload }) => {
+	}, {
+		payload: {} as ProductDTO,
+		message: "should return an entity with all fields as undefined"
+	}])("$message", ({ payload }) => {
 		const product = new ProductEntity(
 			payload.name,
 			payload.description,
@@ -38,6 +41,38 @@ describe("Testing product entity", () => {
 		)
 		expect(product).toMatchObject(payload)
 	})
+
+	it.each([
+		{
+			available: "true",
+			match: true,
+			message: "should convert string 'true' to boolean true",
+		},
+		{
+			available: true,
+			match: true,
+			message: "should accept boolean true as valid entry"
+		},
+		{
+			available: 1,
+			match: true,
+			message: "should accept integer 1 as a valid true entry"
+		},
+		{
+			available: "asdf",
+			match: false,
+			message: "should convert any other value to false"
+		}])("$message", ({ available, match }) => {
+			const productFake = new ProductEntityFake()
+			const productWithDirectUserInput = new ProductEntity(
+				productFake.name,
+				productFake.description,
+				productFake.price,
+				available,
+				productFake.category
+			)
+			expect(productWithDirectUserInput.available).toBe(match)
+		})
 })
 
 describe("Testing product validation", () => {
@@ -46,12 +81,10 @@ describe("Testing product validation", () => {
 		{ key: "name", value: {} },
 		{ key: "description", value: {} },
 		{ key: "price", value: "asdf" },
-		{ key: "available", value: "asdf" },
 		// TESTING MISSING FIELDS
 		{ key: "name", value: undefined },
 		{ key: "description", value: undefined },
 		{ key: "price", value: undefined },
-		{ key: "available", value: undefined },
 		{ key: "category", value: undefined },
 		// TESTING INVALID VALUES
 		{ key: "price", value: '-59.90' },

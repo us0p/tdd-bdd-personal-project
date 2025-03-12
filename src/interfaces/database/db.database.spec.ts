@@ -2,6 +2,7 @@ import { readdir, readFile } from "node:fs/promises"
 import Database from "./db.database"
 import { tmpdir } from "node:os"
 import { join } from "node:path"
+import DatabaseDAO from "./db.database";
 
 type ReturningRowsCb<T> = (error: Error | null, rows: T[]) => void | undefined;
 type ReturningRowCb<T> = (error: Error | null, rows: T) => void;
@@ -21,6 +22,10 @@ describe("Testing Database", () => {
 		await originalFsModule.rm(tmpDirPath, { recursive: true, force: true })
 	})
 
+	beforeEach(() => {
+		DatabaseDAO.instance = undefined
+	})
+
 	it("should expect the location of the database", async () => {
 		await Database.init(join(tmpDirPath, "db.sqlite"))
 		const tmpDirFiles = await originalFsModule.readdir(tmpDirPath)
@@ -36,9 +41,8 @@ describe("Testing Database", () => {
 	it("should call db prepare, run and finalize methods with all the migrations", async () => {
 		const rdir = readdir as jest.Mock
 		const rFile = readFile as jest.Mock
-		const migrationsFolderPath = join(__dirname, "migrations")
 		const migrationFileNames = [
-			join(migrationsFolderPath, "migration.sql")
+			"migration.sql"
 		]
 		const migrationSample = "CREATE TABLE product (name TEXT);"
 		rdir.mockResolvedValue(migrationFileNames)
@@ -54,7 +58,7 @@ describe("Testing Database", () => {
 		expect(rFile.mock.calls).toHaveLength(migrationFileNames.length)
 
 		for (let i = 0; i < migrationFileNames.length; i++) {
-			expect(rFile.mock.calls[i][0]).toBe(migrationFileNames[i])
+			expect(rFile.mock.calls[i][0]).toBe(join(__dirname, "migrations", migrationFileNames[i]))
 			expect(rFile.mock.calls[i][1]).toMatchObject({ encoding: 'utf8' })
 		}
 		expect((db.db.run as jest.Mock).mock.calls).toHaveLength(migrationFileNames.length)
@@ -94,5 +98,20 @@ describe("Testing Database", () => {
 		expect(dbGetAsMock.mock.calls).toHaveLength(1)
 		expect(dbGetAsMock.mock.calls[0][0]).toBe(sql)
 		expect(dbGetAsMock.mock.calls[0][1]).toStrictEqual(params)
+	})
+})
+
+describe("Testing DatabaseDAO.getInstance() method", () => {
+	beforeEach(() => {
+		DatabaseDAO.instance = undefined
+	})
+	it("should throw an error if not previously initialized", () => {
+		expect(DatabaseDAO.getInstance).toThrow(Error)
+		expect(DatabaseDAO.getInstance).toThrow("not initialized")
+	})
+	it("should return the ininitialized instance", async () => {
+		const db = await DatabaseDAO.init(":memory:")
+		const instance = DatabaseDAO.getInstance()
+		expect(instance).toStrictEqual(db)
 	})
 })

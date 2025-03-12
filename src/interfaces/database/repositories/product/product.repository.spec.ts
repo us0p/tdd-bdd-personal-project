@@ -86,7 +86,13 @@ describe("Testing single row return methods", () => {
 			repoMethod: "create",
 			param: productWithoutID,
 			sql: "INSERT INTO product (name, description, price, available, category) VALUES (?, ?, ?, ?, ?) RETURNING *;",
-			daoMethodParams: [productWithoutID]
+			daoMethodParams: [
+				productWithoutID.name,
+				productWithoutID.description,
+				productWithoutID.price,
+				productWithoutID.available,
+				productWithoutID.category
+			]
 		},
 	])("Testing ProductRepository.$repoMethod() method", async (testCase) => {
 		const product = await prepo[testCase.repoMethod](testCase.param)
