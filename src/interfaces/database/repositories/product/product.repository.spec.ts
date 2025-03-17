@@ -126,7 +126,7 @@ describe("Testing ProductRepository.update() method", () => {
 		expect(product).toBeInstanceOf(ProductEntity)
 		expect(dao.get.mock.calls).toHaveLength(1)
 		expect(dao.get.mock.calls[0][0]).toBe(
-			"UPDATE SET name = ?, description = ?, price = ?, available = ?, category = ? FROM update WHERE id = ? RETURNING *;"
+			"UPDATE product SET name = ?, description = ?, price = ?, available = ?, category = ? WHERE id = ? RETURNING *;"
 		)
 		expect(dao.get.mock.calls[0][1]).toStrictEqual([
 			dbProductUpdate.name,

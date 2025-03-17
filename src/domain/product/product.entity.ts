@@ -34,9 +34,9 @@ export default class ProductEntity {
 	}
 
 	validate() {
-		if (typeof this.name !== "string")
+		if (typeof this.name !== "string" || !this.name)
 			throw new ValidationError("name is required")
-		if (typeof this.description !== "string")
+		if (typeof this.description !== "string" || !this.description)
 			throw new ValidationError("description is required")
 		if (isNaN(this.price) || this.price <= 0)
 			throw new ValidationError("price must be a positive number")

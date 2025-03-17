@@ -83,7 +83,9 @@ describe("Testing product validation", () => {
 		{ key: "price", value: "asdf" },
 		// TESTING MISSING FIELDS
 		{ key: "name", value: undefined },
+		{ key: "name", value: "" },
 		{ key: "description", value: undefined },
+		{ key: "description", value: "" },
 		{ key: "price", value: undefined },
 		{ key: "category", value: undefined },
 		// TESTING INVALID VALUES

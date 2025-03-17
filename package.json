@@ -6,15 +6,16 @@
 	"private": true,
 	"license": "UNLICENSED",
 	"scripts": {
-		"start": "nest start",
-		"start:dev": "nest start --watch",
+		"start:dev": "nodemon src/index.ts",
 		"test": "jest",
 		"test:watch": "jest --watch",
 		"test:cov": "jest --coverage",
 		"test:e2e": "cucumber-js"
 	},
 	"dependencies": {
+		"dotenv": "^16.4.7",
 		"express": "^4.21.2",
+		"nodemon": "^3.1.9",
 		"sqlite3": "^5.1.7"
 	},
 	"devDependencies": {
@@ -57,5 +58,8 @@
 			"^src/(.*)$": "<rootDir>/$1",
 			"^test/(.*)$": "<rootDir>/../test/$1"
 		}
-	}
+	},
+	"nodemonConfig": {
+          "exec": "node -r tsconfig-paths/register -r ts-node/register ./src/index.ts"
+        }
 }

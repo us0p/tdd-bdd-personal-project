@@ -62,7 +62,7 @@ export default class ProductRepository implements IProductRepository {
 	}
 	async update(id: number, product: ProductEntity): Promise<ProductEntity | undefined> {
 		const productDb = await this.dao.get<ProductDTO>(
-			"UPDATE SET name = ?, description = ?, price = ?, available = ?, category = ? FROM update WHERE id = ? RETURNING *;",
+			"UPDATE product SET name = ?, description = ?, price = ?, available = ?, category = ? WHERE id = ? RETURNING *;",
 			[
 				product.name,
 				product.description,
